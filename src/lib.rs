@@ -189,9 +189,10 @@ pub fn read_multipart_body<S: Read>(
     stream: &mut S,
     headers: &Headers,
     always_use_files: bool)
-    -> Result<Vec<Node>, Error>
+    -> Result<Vec<Node>, Error> where S: std::fmt::Debug
 {
     let mut reader = BufReader::with_capacity(4096, stream);
+    debug!("mime-multipart body: {:?}", reader );
     let mut nodes: Vec<Node> = Vec::new();
     try!(inner(&mut reader, headers, &mut nodes, always_use_files));
     Ok(nodes)

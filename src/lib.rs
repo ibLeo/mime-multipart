@@ -211,9 +211,8 @@ fn inner<R: BufRead>(
 
     // Read past the initial boundary
     let (mysize, found) = try!(reader.stream_until_token(&boundary, &mut buf));
-    if ! found { return Err(Error::EofBeforeFirstBoundary); }
-
     debug!("body stream size: {:?}", mysize );
+    if ! found { return Err(Error::EofBeforeFirstBoundary); }
 
     // Define the boundary, including the line terminator preceding it.
     // Use their first line terminator to determine whether to use CRLF or LF.

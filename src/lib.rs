@@ -189,10 +189,9 @@ pub fn read_multipart_body<S: Read>(
     stream: &mut S,
     headers: &Headers,
     always_use_files: bool)
-    -> Result<Vec<Node>, Error> where S: std::fmt::Debug
+    -> Result<Vec<Node>, Error>
 {
     let mut reader = BufReader::with_capacity(4096, stream);
-    debug!("mime-multipart body: {:?}", reader );
     let mut nodes: Vec<Node> = Vec::new();
     try!(inner(&mut reader, headers, &mut nodes, always_use_files));
     Ok(nodes)
@@ -208,6 +207,7 @@ fn inner<R: BufRead>(
     let mut buf: Vec<u8> = Vec::new();
 
     let boundary = try!(get_multipart_boundary(headers));
+    debug!("mime-multipart boundary from header: {:?}", boundary );
 
     // Read past the initial boundary
     let (_, found) = try!(reader.stream_until_token(&boundary, &mut buf));
@@ -231,6 +231,7 @@ fn inner<R: BufRead>(
             (vec![b'\n'], vec![b'\n', b'\n'], output)
         }
         else {
+            debug!("No CR after boundary");
             return Err(Error::NoCrLfAfterBoundary);
         }
     };
@@ -240,6 +241,7 @@ fn inner<R: BufRead>(
         {
             let peeker = try!(reader.fill_buf());
             if peeker.len() >= 2 && &peeker[..2] == b"--" {
+                debug!("finished");
                 return Ok(());
             }
         }

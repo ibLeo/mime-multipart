@@ -210,8 +210,11 @@ fn inner<R: BufRead>(
     debug!("mime-multipart boundary from header: {:?}", boundary );
 
     // Read past the initial boundary
-    let (mysize, found) = try!(reader.stream_until_token(&[101], &mut buf));
-    debug!("body stream size: {:?}", mysize );
+    //let (mysize, found) = try!(reader.stream_until_token(&boundary, &mut buf));
+    let mut test = "".to_string();
+    let mysize = try!(reader.read_line(&mut test));
+    debug!("body stream size: {:?}, line: {:?}", mysize, test);
+    let found = false;
     if ! found { return Err(Error::EofBeforeFirstBoundary); }
 
     // Define the boundary, including the line terminator preceding it.

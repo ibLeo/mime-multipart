@@ -210,8 +210,10 @@ fn inner<R: BufRead>(
     debug!("mime-multipart boundary from header: {:?}", boundary );
 
     // Read past the initial boundary
-    let (_, found) = try!(reader.stream_until_token(&boundary, &mut buf));
+    let (mysize, found) = try!(reader.stream_until_token(&boundary, &mut buf));
     if ! found { return Err(Error::EofBeforeFirstBoundary); }
+
+    debug!("body stream size: {:?}", mysize );
 
     // Define the boundary, including the line terminator preceding it.
     // Use their first line terminator to determine whether to use CRLF or LF.

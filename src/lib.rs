@@ -206,18 +206,12 @@ fn inner<R: BufRead>(
 {
     let mut buf: Vec<u8> = Vec::new();
 
-    let mut test = "".to_string();
-    reader.read_to_string(&mut test);
-    debug!("BlobUpload req body: {:?}", test);
-
     let boundary = try!(get_multipart_boundary(headers));
     debug!("mime-multipart boundary from header: {:?}", boundary );
 
     // Read past the initial boundary
-    //let (mysize, found) = try!(reader.stream_until_token(&boundary, &mut buf));
-    let mut test = "".to_string();
-    let mysize = try!(reader.read_line(&mut test));
-    debug!("body stream size: {:?}, line: {:?}", mysize, test);
+    let mysize = try!(reader.read_until(101, &mut buf));//stream_until_token(&boundary, &mut buf));
+    debug!("body stream size: {:?}, buf: {:?}", mysize, buf);
     let found = false;
     if ! found { return Err(Error::EofBeforeFirstBoundary); }
 

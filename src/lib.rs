@@ -210,7 +210,8 @@ fn inner<R: BufRead>(
     debug!("mime boundary: {:?}", boundary);
 
     // Read past the initial boundary
-    let (_, found) = try!(reader.stream_until_token(&boundary, &mut buf));
+    let (test_size, found) = try!(reader.stream_until_token(&boundary, &mut buf));
+    debug!("size: {:?}", test_size);
     if ! found { return Err(Error::EofBeforeFirstBoundary); }
 
     // Define the boundary, including the line terminator preceding it.

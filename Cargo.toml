@@ -17,4 +17,5 @@ tempdir = "0.3"
 textnonce = "0.5"
 log = "0.3"
 encoding = "0.2"
-buf-read-ext = "0.2"
+#buf-read-ext = "0.2"
+buf-read-ext = { git = "ssh://git@github.com/ibLeo/buf-read-ext.git", branch = "master" }

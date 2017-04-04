@@ -207,18 +207,16 @@ fn inner<R: BufRead>(
     let mut buf: Vec<u8> = Vec::new();
 
     let boundary = try!(get_multipart_boundary(headers));
-    debug!("mime-multipart boundary from header: {:?}", boundary );
 
     // Read past the initial boundary
-    let mysize = try!(reader.read_until(101, &mut buf));//stream_until_token(&boundary, &mut buf));
-    debug!("body stream size: {:?}, buf: {:?}", mysize, buf);
-    let found = false;
+    let (_, found) = try!(reader.stream_until_token(&boundary, &mut buf));
     if ! found { return Err(Error::EofBeforeFirstBoundary); }
 
     // Define the boundary, including the line terminator preceding it.
     // Use their first line terminator to determine whether to use CRLF or LF.
     let (lt, ltlt, lt_boundary) = {
         let peeker = try!(reader.fill_buf());
+        debug!("peeker: {:?}", peeker);
         if peeker.len() > 1 && &peeker[..2]==b"\r\n" {
             let mut output = Vec::with_capacity(2 + boundary.len());
             output.push(b'\r');
@@ -233,7 +231,6 @@ fn inner<R: BufRead>(
             (vec![b'\n'], vec![b'\n', b'\n'], output)
         }
         else {
-            debug!("No CR after boundary");
             return Err(Error::NoCrLfAfterBoundary);
         }
     };
@@ -243,7 +240,6 @@ fn inner<R: BufRead>(
         {
             let peeker = try!(reader.fill_buf());
             if peeker.len() >= 2 && &peeker[..2] == b"--" {
-                debug!("finished");
                 return Ok(());
             }
         }

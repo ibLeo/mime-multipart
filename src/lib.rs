@@ -207,6 +207,7 @@ fn inner<R: BufRead>(
     let mut buf: Vec<u8> = Vec::new();
 
     let boundary = try!(get_multipart_boundary(headers));
+    debug!("mime boundary: {:?}", boundary);
 
     // Read past the initial boundary
     let (_, found) = try!(reader.stream_until_token(&boundary, &mut buf));
